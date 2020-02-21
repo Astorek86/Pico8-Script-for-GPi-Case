@@ -1,0 +1,86 @@
+# If you haven't done before, you should replace the "init"-value in cmdline.txt with these:
+# init=/bin/bash -c "mount -t proc proc /proc; mount -t sysfs sys /sys; mount /boot; source /boot/makepico8"
+
+
+
+# Preconfiguring...
+mount -t tmpfs tmp /run
+mkdir -p /run/systemd
+mount / -o remount,rw
+
+
+# Remove init-Script and replace it with some options to prevent Console-Output
+sed -i 's| init=.*| quiet logo\.nologo loglevel=3|' /boot/cmdline.txt
+sed -i 's|console=tty1|consoly=tty3|' /boot/cmdline.txt
+
+
+# Create Folders if not exist; disable motd
+mkdir -p /boot/pico-8/screenshots
+touch /boot/pico-8/.hushlogin
+
+
+# Install libwiringPi. You can find the newest Version on
+# https://archive.raspberrypi.org/debian/pool/main/w/wiringpi/
+# (needs a functioning PATH-Variable)
+export PATH=$PATH:/usr/local/sbin/
+export PATH=$PATH:/usr/sbin/
+export PATH=$PATH:/sbin
+yes | dpkg -i /boot/wiringpi_*_armhf.deb
+
+
+# Create Group and User "pico8"
+groupadd pico8
+useradd -d /boot/pico-8 -M -g pico8 -G video,audio,input -s /bin/bash pico8
+
+
+# Change /etc/fstab . Without root- or sudo-Permission, normal users aren't capable of writing vfat-Partition.
+# After these Changes, user "pico8" will be able to do so...
+picouid=$(id -u pico8)
+picogid=$(id -g pico8)
+sed -i "s/\(\/boot.*vfat.*\)defaults\(.*\)/\1rw,uid=$picouid,gid=$picogid\2/" /etc/fstab
+
+
+# Autologin the new User
+mkdir /etc/systemd/system/getty@tty1.service.d
+cat > /etc/systemd/system/getty@tty1.service.d/override.conf << EOF
+[Service]
+Type=simple
+ExecStart=
+ExecStart=-/sbin/agetty --skip-login --noclear --noissue --login-options "-f pico8" %I $TERM
+EOF
+
+
+# Start PICO8 after Login
+cat > /boot/pico-8/.profile << EOF
+PS1=""
+pgrep pico8 || (cd ~; amixer sset 'PCM' 80% > /dev/null 2>&1; ./pico8 > /dev/null 2>&1 -home /boot/pico-8 -desktop /boot/pico-8/screenshots -splore; sudo /sbin/shutdown -h now)
+EOF
+
+
+# Allow User to shutdown
+cat >> /etc/sudoers << EOF
+pico8 ALL=(ALL) NOPASSWD: /sbin/shutdown
+EOF
+
+
+# Optional Overclocking; If you don't know how to do, it's the best to not touch these...
+# On actual State, this does nothing.
+cat >> /boot/config.txt << EOF
+#arm_freq=1000
+#core_freq=500
+#over_voltage=6
+#sdram_freq=500
+#force_turbo=1
+EOF
+
+
+#Postconfiguring...
+sync
+umount /boot
+mount / -o remount,ro
+sync
+sleep 5
+
+
+# Call Resize-Script
+/usr/lib/raspi-config/init_resize.sh
