@@ -61,16 +61,16 @@ At first, you can directly look into the "makepico8"-File; it's just a simple Sh
 * It does some more Things here and there to avoid printing Text on Screen while Booting. Because Aesthetics^^.
 
 
+## Performance is too slow
+You can open "config.txt" and Overclock as you wish. I added some Options on the Bottom of the File; these Options are disabled (remove the `#` to enable these). Again: Use it with Caution! (Personally I recommend this, but these Settings will also switch the Warranty-Bit on the Raspberry, and I won't do that explicitly. YOU need to do that^^.)
+
+
 ## Volume is too loud or too quiet
 Open `pico-8/.profile`, there's a Section that will look like
 ```
 amixer sset 'PCM' 80%
 ```
-Replace the 80% to your needs (IMHO 100% is too loud...).
-
-
-## I wanna avoid the blinking Cursor on boot
-add `vt.global_cursor_default=0` on your `cmdline.txt`. I think it's OK to show the blinking Cursor on Boot. At least you can see that the Device is working^^.
+Replace the 80% to your needs (IMHO 100% is too loud, but that's just my Opinion...).
 
 
 ## How do I change ssh-Password?
@@ -81,11 +81,15 @@ Login to SSH (if you don't know the IP, try its Hostname: `raspberrypi`). After 
 No Password. This is intended; it's for Autologin and running PICO8 only. It's (to my Knowledge) not possible to logon as Pico8 without using administrative Rights (such as sudo or su). Also SSH as User "Pico8" is not possible (unless you change something on the SSH-Server).
 
 
+## I wanna avoid the blinking Cursor on boot
+add `vt.global_cursor_default=0` on your `cmdline.txt`. I think it's OK to show the blinking Cursor on Boot. At least you can see that the Device is working^^.
+
+
 ## Can I install the GPi Case Shutdown-Script?
 I _think_ it's possible and I also _think_ it'll work; but I didn't installed the Script.
 
 
 # Known Issues
+* Performance-Issues. Some Complex Cards may slowing down the Performance, maybe some Overclocking could help (use with caution!).
 * No Escape-Key. Normally, that's not a Problem as long as you have at least one Game (either on BBS or locally on your "carts"-Folder), because for some weird reason, you cannot shutdown PICO8 without a Highlighted Cart. Sounds weird, and it is weird^^.
-* Some Complex Cards may slowing down the Performance, maybe some Overclocking could help (use with caution!).
 * If you click "load more" multiple times, PICO8 freezes. I don't think I can change anything about that^^.
