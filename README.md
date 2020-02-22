@@ -1,6 +1,10 @@
 # Pico8-Script-for-GPi-Case
 (Unofficial) Script to make the GPi Case run Pico8.
 
+> You can Watch this on Youtube if you prefer:
+> https://youtu.be/JqRGS9bZfkg
+
+
 Like Pico8? Wanna install it on top of a fresh "Raspbian"-Image? PICOPI isn't working anymore? Than that's for you! This Script automates the Installation of Pico8 on a GPi Case; after that, the GPi Case will boot directly into PICO8-Splore.
 
 Of course, you need PICO8 to do that; PICO8 isn't free; you can buy PICO8 here: https://www.lexaloffle.com/pico-8.php
